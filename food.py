@@ -7,7 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1Ph-dzWmPOdDzw7nmH3-am2TQX5dazJHA
 """
 
-##最終
 import time
 import random
 import webbrowser
@@ -125,9 +124,8 @@ def main():
         {"name": "玉米濃湯", "tags": ["點心", "吃的", "鹹的", "熱食"]},
         {"name": "熱壓吐司", "tags": ["點心", "吃的", "鹹的", "熱食"]}
     ]
-
-    while True: # 最外層迴圈，控制是否重新開始
-
+ # 最外層迴圈，控制是否重新開
+    while True:
         print("\n=== 歡迎使用「今天吃什麼」決策小幫手 ===")
         print("回答問題，我將幫你篩選出最適合的美食！")
         time.sleep(1)
@@ -135,7 +133,8 @@ def main():
         candidates = all_foods.copy()
         current_stage = "Q1"
 
-        # 步驟 4: 重複篩選，直到沒有問題可以問
+        # ##修改邏輯：不用管剩幾個，只要還有問題可以問，就繼續篩選
+        # 當 current_stage 為 "End" 時，代表沒有問題了，跳出迴圈
         while True:
 
             question = ""
@@ -143,6 +142,7 @@ def main():
             tag_B = ""
 
             # --- 決定要問什麼問題 (依照上一題的結果決定下一題) ---
+            # --- 決定要問什麼問題 ---
             if current_stage == "Q1":
                 question = "現在的餓度？ (A) 很餓想吃主食 (B) 嘴饞想吃點心"
                 tag_A = "主食"
@@ -163,6 +163,7 @@ def main():
                 tag_A = "飯類"
                 tag_B = "麵類"
 
+            # ##修改邏輯：先問日式或韓式
             elif current_stage == "日韓":
                 question = "想吃哪國料理？ (A) 日式 (B) 韓式"
                 tag_A = "日式"
@@ -183,6 +184,9 @@ def main():
                 question = "形式選擇？ (A) 優雅盤裝 (B) 方便手拿"
                 tag_A = "盤裝"
                 tag_B = "手拿"
+            # 註：因為分完日韓後，選項只剩3-4個，符合你的結束條件，所以這邊不再細問口味，直接結束
+
+            # ##修改邏輯：改成盤裝、手拿
 
             elif current_stage == "點心":
                 question = "種類選擇？ (A) 喝飲料 (B) 吃食物"
@@ -199,6 +203,7 @@ def main():
                 tag_A = "甜的"
                 tag_B = "鹹的"
 
+            # ##修改邏輯：把選項A的輕食文字拿掉
             elif current_stage == "甜的":
                 question = "精緻程度？ (A) 精緻甜點 (B) 隨手包裝零食"
                 tag_A = "精緻"
@@ -211,6 +216,7 @@ def main():
 
             else:
                 # 已經問到決策樹的末端了，結束問答
+                # 沒有對應的問題了 (代表已經問到底了，例如到了"飯類"或"日式")
                 break
 
             # 顯示問題並獲取輸入
@@ -226,23 +232,21 @@ def main():
             new_candidates = []
 
             for food in candidates:
-                # 特殊邏輯處理：東方
+            # (根據您的要求，這裡不顯示篩選後剩餘數量)
+            # print(f"--> 篩選後，還剩下 {len(candidates)} 個選項...")
                 if selected_tag == "東方":
                     if "中式" in food["tags"] or "日式" in food["tags"] or "韓式" in food["tags"]:
                         new_candidates.append(food)
-                # 特殊邏輯處理：日韓
                 elif selected_tag == "日韓":
                     if "日式" in food["tags"] or "韓式" in food["tags"]:
                         new_candidates.append(food)
-                # 一般邏輯
                 elif selected_tag in food["tags"]:
                     new_candidates.append(food)
 
-            # 更新候選名單
             candidates = new_candidates
 
-            # (根據您的要求，這裡不顯示篩選後剩餘數量)
-            # print(f"--> 篩選後，還剩下 {len(candidates)} 個選項...")
+            # ##修改需求：不用顯示剩幾個
+            # print(f"--> 篩選後，還剩下 {len(candidates)} 個選項...") 用註解隱藏起來
 
             current_stage = selected_tag
 
@@ -334,5 +338,6 @@ def main():
             break # 跳出最外層迴圈，程式結束
 
 # 執行主程式
+
 if __name__ == "__main__":
     main()
